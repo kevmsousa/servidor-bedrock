@@ -1,35 +1,24 @@
 #!/bin/bash
-echo "==> Atualizando o sistema..."
+echo "==> Atualizando o sistema básico..."
 sudo apt update && sudo apt upgrade -y
 sudo apt install wget unzip curl -y
 
-echo "==> Instalando e configurando o Playit.gg..."
-curl -SsL https://github.io | sudo bash
-sudo apt install playit -y
+echo "==> Instalando o Playit.gg usando o script oficial atualizado..."
+# Usando o novo instalador universal automatizado do playit
+curl -fsSL https://packages.playit.gg/install.sh | sudo bash
 
-echo "==> Baixando a versão estável do Minecraft Bedrock..."
-if [ ! -d "server" ]; then
-    mkdir server
-    cd server
-    # Comando atualizado com User-Agent para evitar o bloqueio do site
-    wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" https://minecraft.net
-    unzip bedrock-server-1.21.51.02.zip
-    rm bedrock-server-1.21.51.02.zip
-    cd ..
-fi
-
-
-echo "==> Iniciando o Playit em segundo plano..."
-playit > playit.log 2>&1 &
-sleep 5
-
-echo "==> Procurando link de ativação do Playit..."
-if grep -q "visit" playit.log; then
-    grep "visit" playit.log
-else
-    echo "Playit já configurado ou rodando. Verifique o painel do playit.gg"
-fi
-
-echo "==> Iniciando o Servidor de Minecraft..."
+echo "==> Baixando e extraindo o Minecraft Bedrock..."
+# Limpando tentativas anteriores falhas
+rm -rf server
+mkdir server
 cd server
-LD_LIBRARY_PATH=. ./bedrock_server
+
+# Baixando com o disfarce de navegador (User-Agent)
+wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" https://minecraft.net
+unzip bedrock-server-1.21.51.02.zip
+rm bedrock-server-1.21.51.02.zip
+cd ..
+
+echo "==> Iniciando o Playit para gerar o link..."
+# Executa o playit e joga as informações na tela para você pegar o link de ativação
+sudo playit
