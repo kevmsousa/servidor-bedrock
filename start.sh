@@ -11,11 +11,13 @@ echo "==> Baixando a versão estável do Minecraft Bedrock..."
 if [ ! -d "server" ]; then
     mkdir server
     cd server
-    wget https://minecraft.net
+    # Comando atualizado com User-Agent para evitar o bloqueio do site
+    wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" https://minecraft.net
     unzip bedrock-server-1.21.51.02.zip
     rm bedrock-server-1.21.51.02.zip
     cd ..
 fi
+
 
 echo "==> Iniciando o Playit em segundo plano..."
 playit > playit.log 2>&1 &
