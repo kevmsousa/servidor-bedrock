@@ -1,24 +1,37 @@
 #!/bin/bash
-echo "==> Atualizando o sistema básico..."
-sudo apt update && sudo apt upgrade -y
-sudo apt install wget unzip curl -y
+echo "==> Atualizando dependências básicas..."
+sudo apt update && sudo apt install wget unzip curl -y
 
-echo "==> Instalando o Playit.gg usando o script oficial atualizado..."
-# Usando o novo instalador universal automatizado do playit
-curl -fsSL https://packages.playit.gg/install.sh | sudo bash
-
-echo "==> Baixando e extraindo o Minecraft Bedrock..."
-# Limpando tentativas anteriores falhas
+echo "==> Baixando o Minecraft Bedrock (Link Direto)..."
 rm -rf server
 mkdir server
 cd server
 
-# Baixando com o disfarce de navegador (User-Agent)
-wget --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" https://minecraft.net
+# Usando link direto do armazenamento para burlar o bloqueio do site da Mojang
+wget https://azureedge.net
 unzip bedrock-server-1.21.51.02.zip
 rm bedrock-server-1.21.51.02.zip
 cd ..
 
-echo "==> Iniciando o Playit para gerar o link..."
-# Executa o playit e joga as informações na tela para você pegar o link de ativação
-sudo playit
+echo "==> Baixando versão standalone do Playit.gg..."
+# Baixa o executável direto para evitar erros com o serviço do sistema do Codespaces
+if [ ! -f "playit" ]; then
+    curl -Ao playit https://github.com
+    chmod +x playit
+fi
+
+echo "==> Iniciando o Playit em segundo plano..."
+./playit > playit.log 2>&1 &
+sleep 5
+
+echo "==> Procurando link de ativação do Playit..."
+if grep -q "visit" playit.log; then
+    grep "visit" playit.log
+else
+    echo "Verificando log do Playit:"
+    cat playit.log
+fi
+
+echo "==> Iniciando o Servidor de Minecraft..."
+cd server
+LD_LIBRARY_PATH=. ./bedrock_server
